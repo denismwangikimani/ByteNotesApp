@@ -2,7 +2,7 @@ import "./App.css";
 
 const App = () => {
   return (
-    <div className="AppContainer">
+    <div className="app-container">
       {/* Add a form here containing input field and textarea both are 
       required so that the user has to input things and a submit button*/}
       <form className="note-form">

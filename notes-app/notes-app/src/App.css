@@ -1,38 +1,102 @@
-.App {
-  text-align: center;
+/*We'll give it a gray background and a margin to prevent the app from touching the browser window edges*/
+body {
+  font-family: "Roboto", sans-serif;
+  margin: 20px;
+  background-color: rgb(250, 250, 250);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/*For mobile screens, we want our App Container to default to a single column layout, stacking our form and notes grid on top of each other.*/
+.app-container {
+  grid-template-columns: 1fr;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+/* We'll add a media query specifying that for screens larger than 600 pixels, we'll use a two-column layout. We'll define this using grid-template-columns.
+The first column will be 200 pixels wide, accommodating the form. The second column will use 1fr, filling the remaining space. A 20-pixel gap will separate the two columns. */
+@media (min-width: 600px) {
+  .app-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 20px;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/*we will use  grid-template-columns. Each grid item will have a minimum width of 250 pixels and can expand to fill available space. 
+We'll also set grid-auto-rows to ensure each row is a minimum of 250 pixels tall, accommodating notes of different sizes while maintaining a consistent row height.*/
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-auto-rows: minmax(250px, auto);
+  gap: 20px;
+}
+
+.notes-items {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #D5BDAF;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.notes-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.notes-header button {
+  font-size: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  max-width: fit-content;
+}
+
+h2 {
+  margin: 0;
+}
+
+.note-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+textarea,
+input {
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #D6CCC2;
+}
+
+.note-form button {
+  border-radius: 5px;
+  background-color: #E3D5CA;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.note-form button:hover {
+  background-color: #F5EBE0;
+  cursor: pointer;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.edit-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 5px;
+}
+
+.edit-buttons button {
+  flex: 1;
+}
+
+.edit-buttons button:last-of-type {
+  background-color: rgb(220, 89, 89);
+  color: rgb(255, 255, 255);
 }
