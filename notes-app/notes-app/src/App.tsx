@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="AppContainer">
+      {/* Add a form here containing input field and textarea both are 
+      required so that the user has to input things and a submit button*/}
+      <form className="note-form">
+        <input placeholder="Title" required />
+        <textarea placeholder="Content" rows={10} required />
+
+        <button type="submit">Add Note</button>
+      </form>
+
+      {/* Add a div here to display the notes to the right using css grid*/}
+      <div className="notes-grid">
+        <div className="notes-items">
+          <div className="notes-header">
+            <button>x</button>
+          </div>
+          <h2>Note Title</h2>
+          <p>Note Content</p>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
