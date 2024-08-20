@@ -51,7 +51,7 @@ const App = () => {
   we specify the parameter type as React.FormEvent to satisfy TypeScript's typing requirement*/
   const handleAddNote = (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the page from refreshing when submitting the form
-    
+
     const newNote: Note = {
       id: notes.length + 1,
       title: title,
@@ -64,6 +64,18 @@ const App = () => {
     // Clear the input fields after submitting the form
     setTitle("");
     setContent("");
+  };
+
+  //track selected note to enable the user to update it
+  //This state variable will have a type of Note or null to account for the possibility that no note is selected. We'll initialize this state to null.
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+
+  //create a function named handleNoteClick to handle the user's click event on a note and set the
+  //selectedNote state variable to the clicked note and update the input fields with the selected note's title and content.
+  const handleNoteClick = (note: Note) => {
+    setSelectedNote(note);
+    setTitle(note.title);
+    setContent(note.content);
   };
 
   return (
@@ -93,7 +105,12 @@ const App = () => {
       <div className="notes-grid">
         {/* Map over the notes state variable and display each note */}
         {notes.map((note) => (
-          <div className="notes-items">
+          //we will add an onClick event listener to each note to call the handleNoteClick function when the user clicks on a note.
+          <div
+            className="notes-items"
+            key={note.id}
+            onClick={() => handleNoteClick(note)}
+          >
             <div className="notes-header">
               <button>x</button>
             </div>
