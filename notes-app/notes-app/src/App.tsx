@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import React, { useState } from "react";
 
 // Define the type 'Note'
 type Note = {
@@ -78,11 +78,50 @@ const App = () => {
     setContent(note.content);
   };
 
+  //create a function named handleUpdateNote to handle the form submission when the user updates a note.
+  const handleUpdateNote = (event: React.FormEvent) => {
+    // Prevent the page from refreshing when submitting the form
+    event.preventDefault();
+
+    //if the note is not selected, we will return early from the function to prevent the code from executing further.
+    if (!selectedNote) return;
+
+    //we will create an updateNote object based on the selected notes id and update its title and content
+    const updateNote: Note = {
+      id: selectedNote.id,
+      title: title,
+      content: content,
+    };
+
+    //After that, we utilize the (updateNotesList) map function to generate a new array of notes, replacing the selected note with our updated note where the id matches.
+    const updateNotesList = notes.map((note) =>
+      note.id === selectedNote.id ? updateNote : note
+    );
+
+    //The updated array is then set to our state using the setNotes function. Finally, we reset our title, content, and selectedNote state values to their initial states.
+    setNotes(updateNotesList);
+    setTitle("");
+    setContent("");
+    setSelectedNote(null);
+  };
+
+  //We'll also implement a simple handleCancel function to reset our form and selected note when the user decides not to proceed with an update
+  const handleCancel = () => {
+    setTitle("");
+    setContent("");
+    setSelectedNote(null);
+  };
+
   return (
     <div className="app-container">
-      {/* Add a form (where we will call the handleAddNote under onSubmit) here containing input field and textarea both are 
-      required so that the user has to input things and a submit button*/}
-      <form className="note-form" onSubmit={handleAddNote}>
+      {/* Add a form where using the onSubmit we will call either handleUpdateNote function if the note is a selected note thats updated or the 
+      handleAddNote function if its a new note*/}
+      <form
+        className="note-form"
+        onSubmit={(event) =>
+          selectedNote ? handleUpdateNote(event) : handleAddNote(event)
+        }
+      >
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
@@ -97,8 +136,15 @@ const App = () => {
           required
         ></textarea>
 
-        {/*Add a button to submit the form*/}
-        <button type="submit">Add Note</button>
+        {/*if its a selected note, show the save and cancel buttons to save the updated note else show the addNote button to add the new note*/}
+        {selectedNote ? (
+          <div className="edit-buttons">
+            <button type="submit">Save</button>
+            <button onClick={handleCancel}>Cancel</button>
+          </div>
+        ) : (
+          <button type="submit">Add Note</button>
+        )}
       </form>
 
       {/* Add a div here to display the notes to the right using css grid*/}
