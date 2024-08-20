@@ -112,6 +112,18 @@ const App = () => {
     setSelectedNote(null);
   };
 
+  //we will implement the deleteNote function to remove a note from the notes state variable when the user clicks the delete button.
+  const deleteNote = (event: React.MouseEvent, noteId: number) => {
+    //prevent the page from restarting when clicked
+    event.preventDefault();
+
+    //we will use the filter function to create a new array of notes that exclude the note with the matching id
+    const updatedNotes = notes.filter((note) => note.id !== noteId);
+
+    //we will update the notes state variable with the new array of notes
+    setNotes(updatedNotes);
+  }
+
   return (
     <div className="app-container">
       {/* Add a form where using the onSubmit we will call either handleUpdateNote function if the note is a selected note thats updated or the 
@@ -158,7 +170,7 @@ const App = () => {
             onClick={() => handleNoteClick(note)}
           >
             <div className="notes-header">
-              <button>x</button>
+              <button onClick={(event) => deleteNote(event, note.id)}>x</button>
             </div>
             <h2>{note.title}</h2>
             <p>{note.content}</p>
