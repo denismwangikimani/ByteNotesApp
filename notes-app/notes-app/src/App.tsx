@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Define the type 'Note'
 type Note = {
@@ -10,38 +10,8 @@ type Note = {
 
 const App = () => {
   // Create a state variable (6 dummy notes using useState) to store the notes
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: 1,
-      title: "Note 1",
-      content: "test test test for note 1",
-    },
-    {
-      id: 2,
-      title: "Note 2",
-      content: "test test test for note 2",
-    },
-    {
-      id: 3,
-      title: "Note 3",
-      content: "test test test for note 3",
-    },
-    {
-      id: 4,
-      title: "Note 4",
-      content: "test test test for note 4",
-    },
-    {
-      id: 5,
-      title: "Note 5",
-      content: "test test test for note 5",
-    },
-    {
-      id: 6,
-      title: "Note 6",
-      content: "test test test for note 6",
-    },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
+
 
   /*we need to create two state variables to store the title and content of the note*/
   const [title, setTitle] = useState("");
@@ -58,10 +28,10 @@ const App = () => {
       content: content,
     };
 
-    //we will use the setNotes function to update the notes state variable by adding the new note to the existing notes
-    setNotes([newNote, ...notes]);
+    // Ensure notes is an array before updating it
+    setNotes([...notes, newNote]);
 
-    // Clear the input fields after submitting the form
+    // Clear the input fields
     setTitle("");
     setContent("");
   };
@@ -122,7 +92,28 @@ const App = () => {
 
     //we will update the notes state variable with the new array of notes
     setNotes(updatedNotes);
-  }
+  };
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/notes");
+
+        const data = await response.json();
+
+        // Log the fetched data
+        console.log("Fetched notes:", data);
+
+        // Ensure the data is an array of notes
+        
+        setNotes(data.notes);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fetchNotes();
+  }, []);
 
   return (
     <div className="app-container">
@@ -162,7 +153,7 @@ const App = () => {
       {/* Add a div here to display the notes to the right using css grid*/}
       <div className="notes-grid">
         {/* Map over the notes state variable and display each note */}
-        {notes.map((note) => (
+        {notes?.map((note) => (
           //we will add an onClick event listener to each note to call the handleNoteClick function when the user clicks on a note.
           <div
             className="notes-items"
