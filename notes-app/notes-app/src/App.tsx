@@ -66,23 +66,35 @@ const App = () => {
     //if the note is not selected, we will return early from the function to prevent the code from executing further.
     if (!selectedNote) return;
 
-    //we will create an updateNote object based on the selected notes id and update its title and content
-    const updateNote: Note = {
-      id: selectedNote.id,
-      title: title,
-      content: content,
-    };
+    try {
+      //we will send a PUT request to the server to update the note with the matching id
+      const response = await fetch(
+        `http://localhost:5000/api/notes/${selectedNote.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title, content }),
+        }
+      );
 
-    //After that, we utilize the (updateNotesList) map function to generate a new array of notes, replacing the selected note with our updated note where the id matches.
-    const updateNotesList = notes.map((note) =>
-      note.id === selectedNote.id ? updateNote : note
-    );
+      //we will convert the response from the server to JSON format so as to display the updated note
+      const updateNote = await response.json();
 
-    //The updated array is then set to our state using the setNotes function. Finally, we reset our title, content, and selectedNote state values to their initial states.
-    setNotes(updateNotesList);
-    setTitle("");
-    setContent("");
-    setSelectedNote(null);
+      //After that, we utilize the (updateNotesList) map function to generate a new array of notes, replacing the selected note with our updated note where the id matches.
+      const updateNotesList = notes.map((note) =>
+        note.id === selectedNote.id ? updateNote : note
+      );
+
+      //The updated array is then set to our state using the setNotes function. Finally, we reset our title, content, and selectedNote state values to their initial states.
+      setNotes(updateNotesList);
+      setTitle("");
+      setContent("");
+      setSelectedNote(null);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //We'll also implement a simple handleCancel function to reset our form and selected note when the user decides not to proceed with an update
@@ -93,15 +105,24 @@ const App = () => {
   };
 
   //we will implement the deleteNote function to remove a note from the notes state variable when the user clicks the delete button.
-  const deleteNote = (event: React.MouseEvent, noteId: number) => {
+  const deleteNote = async (event: React.MouseEvent, noteId: number) => {
     //prevent the page from restarting when clicked
-    event.preventDefault();
+    event.stopPropagation();
 
-    //we will use the filter function to create a new array of notes that exclude the note with the matching id
-    const updatedNotes = notes.filter((note) => note.id !== noteId);
+    try {
+      //we will use the fetch API to send a DELETE request to the server to delete the note with the matching id
+      await fetch(`http://localhost:5000/api/notes/${noteId}`, {
+        method: "DELETE",
+      });
 
-    //we will update the notes state variable with the new array of notes
-    setNotes(updatedNotes);
+      //we will use the filter function to create a new array of notes that exclude the note with the matching id
+      const updatedNotes = notes.filter((note) => note.id !== noteId);
+
+      //we will update the notes state variable with the new array of notes
+      setNotes(updatedNotes);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //useEffect hook to fetch notes from the server and update the notes state variable
