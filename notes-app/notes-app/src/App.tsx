@@ -12,28 +12,38 @@ const App = () => {
   // Create a state variable (6 dummy notes using useState) to store the notes
   const [notes, setNotes] = useState<Note[]>([]);
 
-
   /*we need to create two state variables to store the title and content of the note*/
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
   /*Create a handleAddNote function to handle the form submission.
   we specify the parameter type as React.FormEvent to satisfy TypeScript's typing requirement*/
-  const handleAddNote = (event: React.FormEvent) => {
+  const handleAddNote = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the page from refreshing when submitting the form
 
-    const newNote: Note = {
-      id: notes.length + 1,
-      title: title,
-      content: content,
-    };
+    //we will save new notes to the server using the fetch API and a POST request
+    const response = await fetch("http://localhost:5000/api/notes", {
+      method: "POST",
+      //we will set the headers to specify the content type as JSON
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title, content }),
+    });
 
-    // Ensure notes is an array before updating it
-    setNotes([...notes, newNote]);
+    //we will convert the response from the server to JSON format so as to display the new note
+    const newNote = await response.json();
 
-    // Clear the input fields
-    setTitle("");
-    setContent("");
+    try {
+      // Ensure notes is an array before updating it
+      setNotes([newNote, ...notes]);
+
+      // Clear the input fields
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //track selected note to enable the user to update it
@@ -49,7 +59,7 @@ const App = () => {
   };
 
   //create a function named handleUpdateNote to handle the form submission when the user updates a note.
-  const handleUpdateNote = (event: React.FormEvent) => {
+  const handleUpdateNote = async (event: React.FormEvent) => {
     // Prevent the page from refreshing when submitting the form
     event.preventDefault();
 
@@ -94,6 +104,7 @@ const App = () => {
     setNotes(updatedNotes);
   };
 
+  //useEffect hook to fetch notes from the server and update the notes state variable
   useEffect(() => {
     const fetchNotes = async () => {
       try {
@@ -105,7 +116,7 @@ const App = () => {
         console.log("Fetched notes:", data);
 
         // Ensure the data is an array of notes
-        
+
         setNotes(data.notes);
       } catch (e) {
         console.log(e);
