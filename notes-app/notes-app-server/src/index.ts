@@ -3,6 +3,7 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
 
 // Load environment variables from .env
 dotenv.config();
@@ -24,8 +25,12 @@ interface AuthenticatedRequest extends Request {
 app.post("/api/auth/signup", async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
+   // Hash the password before saving
+   const hashedPassword = await bcrypt.hash(password, 10);
+
   console.log("Received username:", username);
   console.log("Received password:", password);
+  console.log("Received hashed password: ", hashedPassword);
 
   // Check if the username already exists
   const existingUser = await prisma.user.findUnique({
@@ -41,7 +46,7 @@ app.post("/api/auth/signup", async (req: Request, res: Response) => {
     const newUser = await prisma.user.create({
       data: {
         username,
-        password, // Save password directly (not hashed)
+        password: hashedPassword, // Save password directly (not hashed)
       },
     });
 
