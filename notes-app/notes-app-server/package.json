@@ -5,8 +5,9 @@
   "main": "./src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js", 
-    "build": "npx prisma generate && npx tsc"
+    "start": "node src/index.js",
+    "build": "npx prisma generate && npx tsc",
+    "dev": "nodemon src/index.ts"
   },
   "author": "Denis",
   "license": "MIT",
