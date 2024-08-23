@@ -1,59 +1,144 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-//create an express app and initiate a Prisma client instance
+// Load environment variables from .env
+dotenv.config();
+
 const app = express();
 const prisma = new PrismaClient();
 
-//middleware to parse JSON data and enable CORS
+const SECRET_KEY = process.env.SECRET_KEY || "your-secret-key"; // Ensure to set this in .env file
+
 app.use(express.json());
 app.use(cors());
 
-//we will get all notes from the database
-app.get("/api/notes", async (req, res) => {
-  const notes = await prisma.note.findMany();
+// Extend Express Request to include userId
+interface AuthenticatedRequest extends Request {
+  userId?: number;
+}
+
+// Sign up route (without hashing)
+app.post("/api/auth/signup", async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+
+  console.log("Received username:", username);
+  console.log("Received password:", password);
+
+  // Check if the username already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (existingUser) {
+    return res.status(400).json({ message: "Username already taken" });
+  }
+
+  try {
+    // Create the new user with plain text password (for testing purposes)
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        password, // Save password directly (not hashed)
+      },
+    });
+
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error creating user" });
+  }
+});
+
+// Login route (without password comparison)
+app.post("/api/auth/login", async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+
+  try {
+    // Find the user by username
+    const user = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (!user || user.password !== password) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Generate a JWT
+    const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
+    console.log("Generated token:", token);
+
+    res.status(200).json({ token, username: user.username });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error logging in" });
+  }
+});
+
+// Middleware to authenticate JWT
+const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract the token from the header
+
+  if (!token) {
+    return res.status(401).json({ message: "Token required" });
+  }
+
+  jwt.verify(token, SECRET_KEY, (err, decoded: any) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid token" });
+    }
+
+    req.userId = decoded.userId;
+    next();
+  });
+};
+
+// Protected route for notes
+app.get("/api/notes", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const notes = await prisma.note.findMany({
+    where: { userId: req.userId },
+  });
   res.json({ notes });
 });
 
-//we will create a post request to create a new note
-app.post("/api/notes", async (req, res) => {
-  //get the title and content from the request body
+// Create note route
+app.post("/api/notes", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { title, content } = req.body;
 
-  //if there is no title or content, return a 400 error
   if (!title || !content) {
-    return res.status(400).send("we need a title and content");
+    return res.status(400).json({ message: "Title and content are required" });
   }
 
-  //create a new note in the database using try-catch block
   try {
     const note = await prisma.note.create({
-      data: { title, content },
+      data: {
+        title,
+        content,
+        user: { connect: { id: req.userId } }, // Associate the note with the logged-in user
+      },
     });
     res.json({ note });
   } catch (error) {
-    res.status(500).send("An error occurred while creating the note");
+    console.error(error);
+    res.status(500).json({ message: "Error creating note" });
   }
 });
 
-//we will create a put request to update a note
+// Update note route
 app.put("/api/notes/:id", async (req, res) => {
-  //get the id, title and content from the request body
-  const id  = parseInt(req.params.id);
+  const id = parseInt(req.params.id);
   const { title, content } = req.body;
 
-  //if there is no title or content, return a 400 error
   if (!title || !content) {
-    return res.status(400).send("we need a title and content");
+    return res.status(400).send("Title and content are required");
   }
 
-  //if the note with the id does not exist, return a 400 error
   if (!id || isNaN(id)) {
-    return res.status(400).send("we need a note id");
+    return res.status(400).send("Invalid note id");
   }
 
-  //update the note in the database using try-catch block
   try {
     const note = await prisma.note.update({
       where: { id },
@@ -65,17 +150,14 @@ app.put("/api/notes/:id", async (req, res) => {
   }
 });
 
-//we will create a delete request to delete a note
+// Delete note route
 app.delete("/api/notes/:id", async (req, res) => {
-  //get the id from the request body
   const id = parseInt(req.params.id);
 
-  //if the note with the id does not exist, return a 400 error
   if (!id || isNaN(id)) {
-    return res.status(400).send("we need a note id");
+    return res.status(400).send("Invalid note id");
   }
 
-  //delete the note in the database using try-catch block
   try {
     const note = await prisma.note.delete({
       where: { id },
@@ -87,5 +169,5 @@ app.delete("/api/notes/:id", async (req, res) => {
 });
 
 app.listen(5000, () => {
-  console.log("server running on localhost:5000");
+  console.log("Server running on localhost:5000");
 });

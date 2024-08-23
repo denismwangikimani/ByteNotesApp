@@ -35,7 +35,7 @@ We'll also set grid-auto-rows to ensure each row is a minimum of 250 pixels tall
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
-  background-color: #D5BDAF;
+  background-color: #d5bdaf;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 }
@@ -69,12 +69,12 @@ input {
   border: 1px solid black;
   padding: 10px;
   font-size: 16px;
-  background-color: #D6CCC2;
+  background-color: #d6ccc2;
 }
 
 .note-form button {
   border-radius: 5px;
-  background-color: #E3D5CA;
+  background-color: #e3d5ca;
   border: none;
   padding: 10px;
   font-size: 16px;
@@ -82,7 +82,7 @@ input {
 }
 
 .note-form button:hover {
-  background-color: #F5EBE0;
+  background-color: #f5ebe0;
   cursor: pointer;
 }
 
@@ -99,4 +99,111 @@ input {
 .edit-buttons button:last-of-type {
   background-color: rgb(220, 89, 89);
   color: rgb(255, 255, 255);
+}
+
+/* Landing page styling */
+.App-Landingpage {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  height: 100vh; 
+  background-color: rgb(250, 250, 250);
+}
+
+.App-Landingpage-header {
+  text-align: center; 
+}
+
+.App-Landingpage-text {
+  font-size: 2.5rem;
+  margin-bottom: 20px; 
+}
+
+button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+/* Specific button colors */
+button:nth-of-type(1) {
+  /* Signup button */
+  background-color: #f5ebe0;
+}
+
+button:nth-of-type(2) {
+  /* Login button */
+  background-color: #e3d5ca;
+}
+
+button:hover {
+  opacity: 0.9; 
+}
+
+/* SignUp and Login page styling */
+.App-SignUp,
+.App-Login {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  height: 100vh; 
+  background-color: rgb(250, 250, 250); 
+}
+
+.Signup-form,
+.Login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #f9f9f9;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); 
+}
+
+/* Title styling */
+.Signup-text,
+.Login-text {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.Form-Username-Text,
+.Form-Password-Text {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+/* Form input styling */
+input {
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #d6ccc2;
+}
+
+button {
+  background-color: #e3d5ca;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #f5ebe0; 
+}
+
+/* Center form inside a flexbox container */
+.App-SignUp,
+.App-Login {
+  flex-direction: column;
 }
