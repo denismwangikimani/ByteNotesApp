@@ -22,7 +22,7 @@ const Login = () => {
         const data = await response.json();
         //store the JWT token in the local storage and username
         localStorage.setItem("token", data.token);
-        localStorage.setItem("username", username);
+
         navigate("/notes"); // Redirect to notes page after login
       } else {
         alert("Invalid username or password");

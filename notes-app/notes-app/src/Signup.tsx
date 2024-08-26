@@ -20,9 +20,9 @@ const SignUp = () => {
 
       if (response.ok) {
         const data = await response.json();
-        //store the JWT token in the local storage and username
+        //store the JWT token in the local storage, username and userId can also be stored
         localStorage.setItem("token", data.token);
-        localStorage.setItem("username", username);
+        
         alert("Sign-up successful!");
         navigate("/notes"); // Redirect to notes page after sign-up
       } else {
