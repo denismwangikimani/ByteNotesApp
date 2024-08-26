@@ -222,4 +222,5 @@ const NotesPage = () => {
   );
 };
 
+// Export the NotesPage 
 export default NotesPage;
