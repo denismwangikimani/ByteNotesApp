@@ -67,7 +67,7 @@ const NotesPage = () => {
   //create a function named handleUpdateNote to handle the form submission when the user updates a note.
   const handleUpdateNote = async (event: React.FormEvent) => {
     // Prevent the page from refreshing when submitting the form
-    event.preventDefault();
+    //event.preventDefault();
 
     //if the note is not selected, we will return early from the function to prevent the code from executing further.
     if (!selectedNote) return;
