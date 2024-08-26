@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import { Pool } from "pg"; // Import the pg Pool class
+import { Pool } from "pg";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
@@ -10,14 +10,15 @@ dotenv.config();
 
 const app = express();
 
-const SECRET_KEY = process.env.SECRET_KEY || "your-secret-key"; // Ensure to set this in .env file
+const SECRET_KEY = process.env.SECRET_KEY || "secret";
 
-// Set up the pg Pool connection
+// Set up the pg Pool connection to the database
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, // Required for Neon database
+  ssl: { rejectUnauthorized: false }, 
 });
 
+// Test the connection to the database
 async function getPgVersion() {
   const client = await pool.connect();
   try {
@@ -29,6 +30,7 @@ async function getPgVersion() {
 }
 getPgVersion();
 
+// Middleware to parse JSON bodies
 app.use(express.json());
 app.use(cors());
 
@@ -103,7 +105,8 @@ const authenticateToken = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract the token from the header
+  // Extract the token from the header
+  const token = req.headers.authorization?.split(" ")[1]; 
 
   if (!token) {
     return res.status(401).json({ message: "Token required" });
